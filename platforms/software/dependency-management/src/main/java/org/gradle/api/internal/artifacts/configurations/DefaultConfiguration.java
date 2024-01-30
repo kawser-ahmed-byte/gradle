@@ -1402,7 +1402,7 @@ public abstract class DefaultConfiguration extends AbstractFileCollection implem
         // we forbid any mutation that mutates the public state. The resolution strategy does
         // not mutate the public state of the configuration, so we allow it.
         if (observed && type != MutationType.STRATEGY) {
-            DeprecationLogger.deprecateAction(String.format("Mutating the %s of " + this + " after it has been locked for mutation", typeDescription))
+            DeprecationLogger.deprecateBehaviour(String.format("Mutating the %s of %s after it has been resolved or consumed.", typeDescription, this.getDisplayName()))
                 .withAdvice("After a Configuration has been resolved, observed via dependency-management, or published, it should not be modified further.")
                 .willBecomeAnErrorInGradle9()
                 .withUpgradeGuideSection(8, "mutate_configuration_after_locking")
