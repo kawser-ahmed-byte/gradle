@@ -92,7 +92,8 @@ public class LoggingDeprecatedFeatureHandler implements FeatureHandler<Deprecate
                 @Override
                 public void execute(InternalProblemSpec builder) {
                     ProblemSpec problemSpec = builder
-                        .label(usage.formattedMessage())
+                        .label("Deprecation") // TODO (donat) should we go further with the message, like Deprecated feature is used
+                        .contextualLabel(usage.formattedMessage())
                         .documentedAt(usage.getDocumentationUrl());
                     addPossibleLocation(diagnostics, problemSpec);
                     // TODO (donat) we can further categorize deprecation warnings https://github.com/gradle/gradle/issues/26928

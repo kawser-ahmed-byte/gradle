@@ -28,21 +28,29 @@ import java.util.Map;
 
 @NonNullApi
 public class DefaultProblemContext implements Serializable, ProblemContext {
+    private final String contextualLabel;
     private final List<ProblemLocation> locations;
     private final String description;
     private final RuntimeException cause;
     private final Map<String, Object> additionalData;
 
     protected DefaultProblemContext(
+        @Nullable String contextualLabel,
         List<ProblemLocation> locations,
         @Nullable String description,
         @Nullable RuntimeException cause,
         Map<String, Object> additionalData
     ) {
+        this.contextualLabel = contextualLabel;
         this.locations = ImmutableList.copyOf(locations);
         this.description = description;
         this.cause = cause;
         this.additionalData = ImmutableMap.copyOf(additionalData);
+    }
+
+    @Override
+    public String getContextualLabel() {
+        return contextualLabel;
     }
 
     @Override

@@ -75,13 +75,14 @@ public class InputPropertyAnnotationHandler extends AbstractInputPropertyAnnotat
             validationContext.visitPropertyProblem(problem ->
                 problem
                     .forProperty(propertyMetadata.getPropertyName())
-                    .label(String.format("of type %s shouldn't be annotated with @Optional", valueType.getName()))
+                    .label("Property should be annotated with @Optional")
+                    .contextualLabel(String.format("of type %s shouldn't be annotated with @Optional", valueType.getName()))
                     .documentedAt(userManual(VALIDATION_PROBLEMS, CANNOT_USE_OPTIONAL_ON_PRIMITIVE_TYPES.toLowerCase()))
                     .category(DefaultProblemCategory.VALIDATION, "property", TextUtil.screamingSnakeToKebabCase(CANNOT_USE_OPTIONAL_ON_PRIMITIVE_TYPES))
                     .details("Properties of primitive type cannot be optional")
                     .severity(Severity.ERROR)
                     .solution("Remove the @Optional annotation")
-                    .solution("Use the " + JavaReflectionUtil.getWrapperTypeForPrimitiveType(valueType).getName() + " type instead")
+                    .solution("Use the " + JavaReflectionUtil.getWrapperTypeForPrimitiveType(valueType).getName() + " type instead") // TODO (donat) use contextualSolution
             );
         }
     }
@@ -97,7 +98,8 @@ public class InputPropertyAnnotationHandler extends AbstractInputPropertyAnnotat
             validationContext.visitPropertyProblem(problem ->
                 problem
                     .forProperty(propertyMetadata.getPropertyName())
-                    .label(String.format("has @Input annotation used on property of type '%s'", ModelType.of(valueType).getDisplayName()))
+                    .label(String.format("has @Input annotation used on property"))
+                    .contextualLabel(String.format("has @Input annotation used on property of type '%s'", ModelType.of(valueType).getDisplayName()))
                     .documentedAt(userManual(VALIDATION_PROBLEMS, INCORRECT_USE_OF_INPUT_ANNOTATION.toLowerCase()))
                     .category(DefaultProblemCategory.VALIDATION, "property", TextUtil.screamingSnakeToKebabCase(INCORRECT_USE_OF_INPUT_ANNOTATION))
                     .severity(Severity.ERROR)
@@ -115,7 +117,8 @@ public class InputPropertyAnnotationHandler extends AbstractInputPropertyAnnotat
             validationContext.visitPropertyProblem(problem ->
                 problem
                     .forProperty(propertyMetadata.getPropertyName())
-                    .label(String.format("has @Input annotation used on property of type '%s'", ModelType.of(valueType).getDisplayName()))
+                    .label(String.format("has @Input annotation used on property"))
+                    .contextualLabel(String.format("has @Input annotation used on property of type '%s'", ModelType.of(valueType).getDisplayName()))
                     .documentedAt(userManual(VALIDATION_PROBLEMS, INCORRECT_USE_OF_INPUT_ANNOTATION.toLowerCase()))
                     .category(DefaultProblemCategory.VALIDATION, "property", TextUtil.screamingSnakeToKebabCase(INCORRECT_USE_OF_INPUT_ANNOTATION))
                     .severity(Severity.ERROR)
@@ -134,11 +137,12 @@ public class InputPropertyAnnotationHandler extends AbstractInputPropertyAnnotat
             validationContext.visitPropertyProblem(problem ->
                 problem
                     .forProperty(propertyMetadata.getPropertyName())
-                    .label(String.format("has @Input annotation used on type '%s' or a property of this type", URL.class.getName()))
+                    .label(String.format("has @Input annotation used"))
+                    .contextualLabel(String.format("has @Input annotation used on type '%s' or a property of this type", URL.class.getName()))
                     .documentedAt(userManual(VALIDATION_PROBLEMS, UNSUPPORTED_VALUE_TYPE.toLowerCase()))
                     .category(DefaultProblemCategory.VALIDATION, "property", TextUtil.screamingSnakeToKebabCase(UNSUPPORTED_VALUE_TYPE))
                     .severity(WARNING)
-                    .details(String.format("Type '%s' is not supported on properties annotated with @Input because Java Serialization can be inconsistent for this type", URL.class.getName()))
+                    .details(String.format("Type '%s' is not supported on properties annotated with @Input because Java Serialization can be inconsistent for this type", URL.class.getName())) // TODO (donat) contextualSolution
                     .solution("Use type 'java.net.URI' instead")
             );
         }

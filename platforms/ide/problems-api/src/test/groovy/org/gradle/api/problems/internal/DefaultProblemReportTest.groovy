@@ -82,6 +82,7 @@ class DefaultProblemReportTest extends Specification {
                 DefaultProblemCategory.create('a', 'b', 'c')
             ),
             new DefaultProblemContext(
+                null,
                 [],
                 'description',
                 new RuntimeException('cause'),
@@ -101,6 +102,7 @@ class DefaultProblemReportTest extends Specification {
                 DefaultProblemCategory.create('a', 'b', 'c')
             ),
             new DefaultProblemContext(
+                'contextual label',
                 [],
                 'description',
                 new RuntimeException('cause'),

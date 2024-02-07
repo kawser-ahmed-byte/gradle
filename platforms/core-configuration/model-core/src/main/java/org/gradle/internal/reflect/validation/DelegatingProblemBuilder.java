@@ -18,6 +18,7 @@ package org.gradle.internal.reflect.validation;
 
 import org.gradle.api.NonNullApi;
 import org.gradle.api.problems.internal.DocLink;
+import org.gradle.api.problems.internal.InternalProblemSpec;
 import org.gradle.api.problems.internal.ProblemReport;
 import org.gradle.api.problems.Severity;
 import org.gradle.api.problems.internal.InternalProblemBuilder;
@@ -41,6 +42,11 @@ class DelegatingProblemBuilder implements InternalProblemBuilder {
     @Override
     public InternalProblemBuilder label(String label) {
         return validateDelegate(delegate).label(label);
+    }
+
+    @Override
+    public InternalProblemSpec contextualLabel(String contextualLabel) {
+        return validateDelegate(delegate).contextualLabel(contextualLabel);
     }
 
     @Override

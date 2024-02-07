@@ -26,6 +26,14 @@ import java.util.Map;
 public interface ProblemContext {
 
     /**
+     * TODO javadoc
+     * TODO explain difference between this and ProblemDefinition.getLabel();
+     * TODO ProblemDefinition.getLabel();
+     */
+    @Nullable
+    String getContextualLabel();
+
+    /**
      * A long description detailing the problem.
      * <p>
      * Details can elaborate on the problem, and provide more information about the problem.

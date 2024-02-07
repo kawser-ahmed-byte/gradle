@@ -22,6 +22,16 @@ import org.gradle.api.problems.Severity;
 public interface InternalProblemSpec extends ProblemSpec {
 
     /**
+     * TODO (donat) documentation
+     * Maybe this should be part of the public API.
+     * Different form label as it has a context specific content.
+     * Label should be required to be non-contextual.
+     *
+     * @return this
+     */
+    InternalProblemSpec contextualLabel(String contextualLabel);
+
+    /**
      * Specifies arbitrary data associated with this problem.
      * <p>
      * The only supported value type is {@link String}. Future Gradle versions may support additional types.
