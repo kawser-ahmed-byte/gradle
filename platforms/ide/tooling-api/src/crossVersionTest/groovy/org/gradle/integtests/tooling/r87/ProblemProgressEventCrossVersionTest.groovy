@@ -16,7 +16,6 @@
 
 package org.gradle.integtests.tooling.r87
 
-
 import org.gradle.integtests.fixtures.GroovyBuildScriptLanguage
 import org.gradle.integtests.tooling.fixture.TargetGradleVersion
 import org.gradle.integtests.tooling.fixture.ToolingApiSpecification
@@ -24,7 +23,9 @@ import org.gradle.integtests.tooling.fixture.ToolingApiVersion
 import org.gradle.integtests.tooling.r85.CustomModel
 import org.gradle.integtests.tooling.r85.ProblemProgressEventCrossVersionTest.ProblemProgressListener
 import org.gradle.tooling.BuildException
-import org.gradle.tooling.events.problems.ProblemDescriptor
+import org.gradle.tooling.events.problems.ProblemAggregationEvent
+import org.gradle.tooling.events.problems.SingleProblemEvent
+import org.gradle.tooling.events.problems.TaskPathLocation
 
 import static org.gradle.integtests.fixtures.AvailableJavaHomes.getJdk17
 import static org.gradle.integtests.tooling.r86.ProblemProgressEventCrossVersionTest.assertProblemDetailsForTAPIProblemEvent
@@ -47,7 +48,7 @@ class ProblemProgressEventCrossVersionTest extends ToolingApiSpecification {
                 .addProgressListener(listener)
                 .run()
         }
-        return listener.problems.collect { (ProblemDescriptor) it }
+        return listener.problems //.collect { (ProblemDescriptor) it }
     }
 
     @TargetGradleVersion(">=8.5")
@@ -80,6 +81,45 @@ class ProblemProgressEventCrossVersionTest extends ToolingApiSpecification {
         listener.problems.size() == 2
     }
 
+    def "Problems expose summary Tooling API events"() {
+        given:
+        withReportProblemTask """
+            for(int i = 0; i < 10; i++) {
+                problems.forNamespace("org.example.plugin").reporting{
+                    it.label("The 'standard-plugin' is deprecated")
+                        .category("deprecation", "plugin")
+                        .severity(Severity.WARNING)
+                        .solution("Please use 'standard-plugin-2' instead of this plugin")
+                    }
+            }
+        """
+
+        when:
+        def listener = new ProblemProgressListener()
+        withConnection { connection ->
+            connection.newBuild().forTasks('reportProblem')
+                .addProgressListener(listener)
+                .run()
+        }
+
+        then:
+        def problems = listener.problems
+        problems.size() == 2
+
+
+        def firstProblem = (SingleProblemEvent) problems[0]
+        firstProblem.label.label == "The 'standard-plugin' is deprecated"
+        firstProblem.details.details == null
+
+        def aggregatedProblems = (ProblemAggregationEvent) problems[1]
+
+        def aggregations =  aggregatedProblems.aggregations
+        aggregations.size() == 1
+        aggregations[0].label.label == "The 'standard-plugin' is deprecated"
+        aggregations[0].problemDescriptors.size() == 10
+    }
+
+
     @TargetGradleVersion(">=8.6")
     def "Problems expose details via Tooling API events with failure"() {
         given:
@@ -102,6 +142,7 @@ class ProblemProgressEventCrossVersionTest extends ToolingApiSpecification {
 
         then:
         assertProblemDetailsForTAPIProblemEvent(problems, expectedDetails, expecteDocumentation)
+        def location = problems[0].locations[1] as TaskPathLocation
         problems[0].failure == null
 
         where:
@@ -152,7 +193,7 @@ class ProblemProgressEventCrossVersionTest extends ToolingApiSpecification {
 
         then:
         thrown(BuildException)
-        def problems = listener.problems.collect { it as ProblemDescriptor }
+        def problems = listener.problems
         problems.size() == 1
         problems[0].label.label == "Could not compile build file '$buildFile.absolutePath'."
         problems[0].category.category == 'compilation'
