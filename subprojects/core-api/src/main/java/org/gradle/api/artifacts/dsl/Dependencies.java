@@ -19,7 +19,6 @@ package org.gradle.api.artifacts.dsl;
 import org.gradle.api.Incubating;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencyConstraint;
-import org.gradle.api.artifacts.ExternalModuleDependency;
 import org.gradle.api.artifacts.MinimalExternalModuleDependency;
 import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.model.ObjectFactory;
@@ -98,29 +97,6 @@ public interface Dependencies {
      */
     default ProjectDependency project() {
         return getDependencyFactory().create(getProject());
-    }
-
-    /**
-     * Create an {@link ExternalModuleDependency} from the given notation.
-     *
-     * @param dependencyNotation dependency to add
-     * @return the new dependency
-     * @see DependencyFactory#create(CharSequence) Valid dependency notation for this method
-     */
-    default ExternalModuleDependency module(CharSequence dependencyNotation) {
-        return getDependencyFactory().create(dependencyNotation);
-    }
-
-    /**
-     * Create an {@link ExternalModuleDependency} from a series of strings.
-     *
-     * @param group the group (optional)
-     * @param name the name
-     * @param version the version (optional)
-     * @return the new dependency
-     */
-    default ExternalModuleDependency module(@Nullable String group, String name, @Nullable String version) {
-        return getDependencyFactory().create(group, name, version);
     }
 
     /**

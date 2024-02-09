@@ -123,6 +123,16 @@ public abstract class DefaultDependencyCollector implements DependencyCollector 
     }
 
     @Override
+    public void add(@Nullable String group, String name, @Nullable String version) {
+        doAddEager(dependencyFactory.create(group, name, version), null);
+    }
+
+    @Override
+    public void add(@Nullable String group, String name, @Nullable String version, Action<? super ExternalModuleDependency> configuration) {
+        doAddEager(dependencyFactory.create(group, name, version), configuration);
+    }
+
+    @Override
     public void add(FileCollection files) {
         doAddEager(dependencyFactory.create(files), null);
     }

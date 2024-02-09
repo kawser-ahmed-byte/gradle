@@ -118,6 +118,22 @@
         },
         {
             "type": "org.gradle.kotlin.dsl.DependenciesExtensionsKt",
+            "member": "Method org.gradle.kotlin.dsl.DependenciesExtensionsKt.add$default(org.gradle.api.artifacts.dsl.DependencyCollector,java.lang.String,java.lang.String,java.lang.String,org.gradle.api.Action,int,java.lang.Object)",
+            "acceptation": "actual method is annotated",
+            "changes": [
+                "Method added to public class"
+            ]
+        },
+        {
+            "type": "org.gradle.kotlin.dsl.DependenciesExtensionsKt",
+            "member": "Method org.gradle.kotlin.dsl.DependenciesExtensionsKt.invoke$default(org.gradle.api.artifacts.dsl.DependencyCollector,java.lang.String,java.lang.String,java.lang.String,org.gradle.api.Action,int,java.lang.Object)",
+            "acceptation": "actual method is annotated",
+            "changes": [
+                "Method added to public class"
+            ]
+        },
+        {
+            "type": "org.gradle.kotlin.dsl.DependenciesExtensionsKt",
             "member": "Method org.gradle.kotlin.dsl.DependenciesExtensionsKt.invokeConstraint(org.gradle.api.artifacts.dsl.DependencyCollector,org.gradle.api.provider.Provider)",
             "acceptation": "Kotlin name matching is wrong -- this method is annotated",
             "changes": [

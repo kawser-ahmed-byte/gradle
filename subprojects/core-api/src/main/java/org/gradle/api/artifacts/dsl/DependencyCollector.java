@@ -28,6 +28,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderConvertible;
 
+import javax.annotation.Nullable;
 import java.util.Set;
 
 /**
@@ -73,6 +74,31 @@ public interface DependencyCollector {
      * @since 8.6
      */
     void add(CharSequence dependencyNotation, Action<? super ExternalModuleDependency> configuration);
+
+    /**
+     * Add a dependency.
+     *
+     * @param group the group
+     * @param name the name
+     * @param version the version
+     * @see DependencyFactory#create(String, String, String) Valid dependency notation for this method
+     *
+     * @since 8.7
+     */
+    void add(@Nullable String group, String name, @Nullable String version);
+
+    /**
+     * Add a dependency and configure it.
+     *
+     * @param group the group
+     * @param name the name
+     * @param version the version
+     * @param configuration an action to configure the dependency
+     * @see DependencyFactory#create(String, String, String) Valid dependency notation for this method
+     *
+     * @since 8.7
+     */
+    void add(@Nullable String group, String name, @Nullable String version, Action<? super ExternalModuleDependency> configuration);
 
     /**
      * Add a dependency.

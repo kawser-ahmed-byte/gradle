@@ -74,7 +74,7 @@ class DependenciesExtensions {
             implementation("org:foo:1.0") // is getImplementation().add("org:foo:1.0")
 
             // Add a dependency with explicit coordinate parameters
-            implementation(module(group = "org", name = "foo", version = "1.0")) // is getImplementation().add(module("org", "foo", "1.0"))
+            implementation(group = "org", name = "foo", version = "1.0") // is getImplementation().add(module("org", "foo", "1.0"))
 
             // Add dependencies on projects
             implementation(project(":path")) // is getImplementation().add(project(":path"))
@@ -100,15 +100,31 @@ class DependenciesExtensions {
 }
 
 
-// The #module and #constraint methods here allow the usage of named arguments in Kotlin, even though the signature is overall the same as the Java method.
+// The GAV overloads here allow the usage of named arguments in Kotlin, even though the signature is overall the same as the Java method.
 
 
 /**
- * Creates a dependency based on the group, name and version (GAV) coordinates.
+ * Add a dependency based on the group, name and version (GAV) coordinates.
  *
- * @since 8.0
+ * @since 8.7
  */
-fun Dependencies.module(group: String?, name: String, version: String?): ExternalModuleDependency = module(group, name, version)
+fun DependencyCollector.add(group: String?, name: String, version: String?, configuration: Action<in ExternalModuleDependency>? = null) = if (configuration == null) {
+    add(group, name, version)
+} else {
+    add(group, name, version, configuration)
+}
+
+
+/**
+ * Add a dependency based on the group, name and version (GAV) coordinates.
+ *
+ * @since 8.7
+ */
+operator fun DependencyCollector.invoke(group: String?, name: String, version: String?, configuration: Action<in ExternalModuleDependency>? = null) = if (configuration == null) {
+    add(group, name, version)
+} else {
+    add(group, name, version, configuration)
+}
 
 
 /**

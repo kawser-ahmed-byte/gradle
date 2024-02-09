@@ -86,30 +86,24 @@ public class DependenciesExtensionModule {
         }
     }
 
-    /**
-     * Creates an {@link ExternalModuleDependency} from the given Map notation. This emulates named parameters in Groovy DSL.
-     * <p>
-     * The map may contain:
-     * <ul>
-     *   <li>{@code group}</li>
-     *   <li>{@code version}</li>
-     * </ul>
-     *
-     * It must contain at least the following keys:
-     * <ul>
-     *   <li>{@code name}</li>
-     * </ul>
-     *
-     * @param map a map of configuration parameters for the dependency
-     * @return the dependency
-     */
-    public static ExternalModuleDependency module(Dependencies self, Map<String, CharSequence> map) {
-        validateModuleMap(map);
-        String group = extract(map, GROUP);
-        String name = extract(map, NAME);
-        String version = extract(map, VERSION);
-        assert name != null : "Just for types, this is not possible";
-        return self.module(group, name, version);
+    private static final class ValidatedModuleMap {
+        @Nullable
+        private static String extract(Map<String, CharSequence> map, String key) {
+            return (map.containsKey(key)) ? map.get(key).toString() : null;
+        }
+
+        @Nullable
+        private final String group;
+        private final String name;
+        @Nullable
+        private final String version;
+
+        private ValidatedModuleMap(Map<String, CharSequence> map) {
+            validateModuleMap(map);
+            this.group = extract(map, GROUP);
+            this.name = extract(map, NAME);
+            this.version = extract(map, VERSION);
+        }
     }
 
     /**
@@ -131,17 +125,8 @@ public class DependenciesExtensionModule {
      * @since 8.7
      */
     public static DependencyConstraint constraint(Dependencies self, Map<String, CharSequence> map) {
-        validateModuleMap(map);
-        String group = extract(map, GROUP);
-        String name = extract(map, NAME);
-        String version = extract(map, VERSION);
-        assert name != null : "Just for types, this is not possible";
-        return self.constraint(group, name, version);
-    }
-
-    @Nullable
-    private static String extract(Map<String, CharSequence> map, String key) {
-        return (map.containsKey(key)) ? map.get(key).toString() : null;
+        ValidatedModuleMap validatedMap = new ValidatedModuleMap(map);
+        return self.constraint(validatedMap.group, validatedMap.name, validatedMap.version);
     }
 
     /**
@@ -154,6 +139,43 @@ public class DependenciesExtensionModule {
      */
     public static ExternalModuleDependency call(DependencyModifier self, CharSequence dependencyNotation) {
         return self.modify(dependencyNotation);
+    }
+
+    /**
+     * Modifies a dependency.
+     *
+     * @param group the group
+     * @param name the name
+     * @param version the version
+     * @return the modified dependency
+     * @see DependencyFactory#create(String, String, String)
+     * @since 8.7
+     */
+    public static ExternalModuleDependency call(DependencyModifier self, @Nullable String group, String name, @Nullable String version) {
+        return self.modify(group, name, version);
+    }
+
+    /**
+     * Modifies a dependency using the given Map notation. This emulates named parameters in Groovy DSL.
+     * <p>
+     * The map may contain:
+     * <ul>
+     *   <li>{@code group}</li>
+     *   <li>{@code version}</li>
+     * </ul>
+     *
+     * It must contain at least the following keys:
+     * <ul>
+     *   <li>{@code name}</li>
+     * </ul>
+     *
+     * @param map a map of configuration parameters for the dependency
+     * @return the modified dependency
+     * @since 8.7
+     */
+    public static ExternalModuleDependency call(DependencyModifier self, Map<String, CharSequence> map) {
+        ValidatedModuleMap validatedMap = new ValidatedModuleMap(map);
+        return self.modify(validatedMap.group, validatedMap.name, validatedMap.version);
     }
 
     /**
@@ -208,6 +230,78 @@ public class DependenciesExtensionModule {
      */
     public static void call(DependencyCollector self, CharSequence dependencyNotation, @ClosureParams(value = SimpleType.class, options = "org.gradle.api.artifacts.ExternalModuleDependency") Closure<?> configuration) {
         self.add(dependencyNotation, ConfigureUtil.configureUsing(configuration));
+    }
+
+    /**
+     * Add a dependency.
+     *
+     * @param group the group
+     * @param name the name
+     * @param version the version
+     * @see DependencyFactory#create(String, String, String)
+     * @since 8.7
+     */
+    public static void call(DependencyCollector self, @Nullable String group, String name, @Nullable String version) {
+        self.add(group, name, version);
+    }
+
+    /**
+     * Add a dependency.
+     *
+     * @param group the group
+     * @param name the name
+     * @param version the version
+     * @param configuration an action to configure the dependency
+     * @see DependencyFactory#create(String, String, String) Valid dependency notation for this method
+     * @since 8.7
+     */
+    public static void call(DependencyCollector self, @Nullable String group, String name, @Nullable String version, @ClosureParams(value = SimpleType.class, options = "org.gradle.api.artifacts.ExternalModuleDependency") Closure<?> configuration) {
+        self.add(group, name, version, ConfigureUtil.configureUsing(configuration));
+    }
+
+    /**
+     * Add a dependency using the given Map notation. This emulates named parameters in Groovy DSL.
+     * <p>
+     * The map may contain:
+     * <ul>
+     *   <li>{@code group}</li>
+     *   <li>{@code version}</li>
+     * </ul>
+     *
+     * It must contain at least the following keys:
+     * <ul>
+     *   <li>{@code name}</li>
+     * </ul>
+     *
+     * @param map a map of configuration parameters for the dependency
+     * @since 8.7
+     */
+    public static void call(DependencyCollector self, Map<String, CharSequence> map) {
+        ValidatedModuleMap validatedMap = new ValidatedModuleMap(map);
+        self.add(validatedMap.group, validatedMap.name, validatedMap.version);
+    }
+
+    /**
+     * Add a dependency using the given Map notation. This emulates named parameters in Groovy DSL.
+     * <p>
+     * The map may contain:
+     * <ul>
+     *   <li>{@code group}</li>
+     *   <li>{@code version}</li>
+     * </ul>
+     *
+     * It must contain at least the following keys:
+     * <ul>
+     *   <li>{@code name}</li>
+     * </ul>
+     *
+     * @param map a map of configuration parameters for the dependency
+     * @param configuration an action to configure the dependency
+     * @since 8.7
+     */
+    public static void call(DependencyCollector self, Map<String, CharSequence> map, @ClosureParams(value = SimpleType.class, options = "org.gradle.api.artifacts.ExternalModuleDependency") Closure<?> configuration) {
+        ValidatedModuleMap validatedMap = new ValidatedModuleMap(map);
+        self.add(validatedMap.group, validatedMap.name, validatedMap.version, ConfigureUtil.configureUsing(configuration));
     }
 
     /**

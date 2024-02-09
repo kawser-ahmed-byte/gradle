@@ -25,6 +25,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderConvertible;
 import org.gradle.internal.Cast;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 
 /**
@@ -78,6 +79,20 @@ public abstract class DependencyModifier {
      */
     public final ExternalModuleDependency modify(CharSequence dependencyNotation) {
         return modify(getDependencyFactory().create(dependencyNotation));
+    }
+
+    /**
+     * Create an {@link ExternalModuleDependency} from the given group, name, and version and modifies it to select the variant of the given module as described in {@link #modify(ModuleDependency)}.
+     *
+     * @param group the group
+     * @param name the name
+     * @param version the version
+     * @return the modified dependency
+     * @see DependencyFactory#create(String, String, String)
+     * @since 8.7
+     */
+    public final ExternalModuleDependency modify(@Nullable String group, String name, @Nullable String version) {
+        return modify(getDependencyFactory().create(group, name, version));
     }
 
     /**
